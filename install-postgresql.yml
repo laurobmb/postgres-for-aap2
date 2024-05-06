@@ -3,9 +3,20 @@
   hosts: all
   gather_facts: true
   become: true
-
   tasks:
-
     - name: Install Postgresql
       ansible.builtin.include_role:
         name: geerlingguy.postgresql
+
+    - name: Ensure Firewalld service is running and enabled
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: Allow PostgreSQL traffic
+      ansible.posix.firewalld:
+        service: postgresql
+        permanent: true
+        state: enabled
+        immediate: true
